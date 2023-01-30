@@ -134,7 +134,7 @@ class syscoonFinanceinterface(models.Model):
         if datas:
             content, filetype = self.merge_pdf(datas, move)
         else:
-            content, filetype = self.env.ref('account.account_invoices')._render_qweb_pdf([move.id])
+            content, filetype = self.env['ir.actions.report']._render_qweb_pdf('account.account_invoices', [move.id])
         report_maked = report._make((content, filetype))
         return report_maked
 
@@ -149,7 +149,7 @@ class syscoonFinanceinterface(models.Model):
         try:
             etree.fromstring(xml, parser)
             return xml
-        except Exception as e:
+        except (ValueError, AttributeError):
             errors.append(self.get_error_msg(move_id))
             for arg in e.args:
                 errors.append(arg)
@@ -242,7 +242,7 @@ class syscoonFinanceinterface(models.Model):
                 inv_documents_xml_path = self.write_export_invoice_info(dir_path, export_info_xml, timestamp)
             return filter(None, chain((inv_documents_xml_path,), *map(get_doc_paths, written_docs)))
         except:
-            return UserError(_('Please check if the export path %s is not writalbe, please check!' % dir_path))
+            raise UserError(_('Please check if the export path %s is not writalbe!' % dir_path))
 
     def get_error_msg(self, move_id):
         return _('%s (id=%s) could not be exported: ' % (move_id.name, move_id.id))

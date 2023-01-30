@@ -3,8 +3,8 @@
 # this module contains the full copyright notices and license terms.
 {
     'name': 'syscoon Finanzinterface - Automatic Configuration SKR03',
-    'version': '16.0.0.0.1',
-    'author': 'syscoon OÜ',
+    'version': '16.0.0.0.2',
+    'author': 'syscoon Estionia OÜ',
     'license': 'OPL-1',
     'category': 'Accounting',
     'website': 'https://syscoon.com',

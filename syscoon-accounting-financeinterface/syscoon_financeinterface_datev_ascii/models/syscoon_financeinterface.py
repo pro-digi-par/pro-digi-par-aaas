@@ -369,10 +369,10 @@ class syscoonFinanceinterface(models.Model):
         export_line['Buchungstext'] = self.create_label(line)
         if line.company_id.datev_use_bedi:
             export_line['Beleglink'] = '"BEDI ""%s""' % line.move_id.datev_bedi or ''
-        if line.analytic_account_id.code:
-            export_line['KOST1 - Kostenstelle'] = line.analytic_account_id.code
-        if line.analytic_tag_ids:
-            export_line['KOST2 - Kostenstelle'] = line.analytic_tag_ids[0].name
+        # if line.analytic_account_id.code:
+        #     export_line['KOST1 - Kostenstelle'] = line.analytic_account_id.code
+        # if line.analytic_tag_ids:
+        #     export_line['KOST2 - Kostenstelle'] = line.analytic_tag_ids[0].name
         if line.account_id.datev_vatid_required:
             if line.move_id.partner_shipping_id and line.move_id.partner_shipping_id.vat:
                 export_line['EU-Mitgliedstaat u. UStIdNr'] = line.move_id.partner_shipping_id.vat

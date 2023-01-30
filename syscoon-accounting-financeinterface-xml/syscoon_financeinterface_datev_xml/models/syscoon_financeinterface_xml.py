@@ -160,7 +160,7 @@ class syscoonFinanceinterfaceXML(models.TransientModel):
         vals = []
         total_invoice_amount = 0.0
         for line in move_id.invoice_line_ids:
-            if not line.display_type and not line.price_subtotal == 0.0:
+            if line.display_type not in ['line_section', 'line_note'] and not line.price_subtotal == 0.0:
                 item = self._get_invoice_item_list_item(move_id, line, invoice_mode)
                 vals.append(item)
         if self.env.company.export_xml_group_lines and invoice_mode == 'extended':
@@ -203,13 +203,14 @@ class syscoonFinanceinterfaceXML(models.TransientModel):
             else:
                 sign = 1
             difference = move_id.currency_id.round(total_invoice_amount - (move_id.amount_total * sign))
-            last_val = vals[-1]
-            del vals[-1]
-            if last_val['price_line_amount'].get('tax_amount'):
-                last_val['price_line_amount']['tax_amount'] = move_id.currency_id.round(last_val['price_line_amount']['tax_amount'] - difference)
-            if last_val['price_line_amount'].get('gross_price_line_amount',0.0):
-                last_val['price_line_amount']['gross_price_line_amount'] = move_id.currency_id.round(last_val['price_line_amount'].get('gross_price_line_amount',0.0) - difference)
-            vals.append(last_val)
+            if vals:
+                last_val = vals[-1]
+                del vals[-1]
+                if last_val['price_line_amount'].get('tax_amount'):
+                    last_val['price_line_amount']['tax_amount'] = move_id.currency_id.round(last_val['price_line_amount']['tax_amount'] - difference)
+                if last_val['price_line_amount'].get('gross_price_line_amount',0.0):
+                    last_val['price_line_amount']['gross_price_line_amount'] = move_id.currency_id.round(last_val['price_line_amount'].get('gross_price_line_amount',0.0) - difference)
+                vals.append(last_val)
         return vals
 
     def _get_invoice_item_list_item(self, move_id, line, invoice_mode):
@@ -242,11 +243,11 @@ class syscoonFinanceinterfaceXML(models.TransientModel):
                     item['accounting_info']['bu_code'] = False
             else:
                 item['accounting_info']['bu_code'] = False
-            if move_id.company_id.export_xml_analytic_accounts:
-                if line.analytic_account_id and line.analytic_account_id.code:
-                    item['accounting_info']['cost_category_id'] = line.analytic_account_id.code
-                if line.analytic_tag_ids:
-                    item['accounting_info']['cost_category_id2'] = line.analytic_tag_ids[0].name[:35]
+            # if move_id.company_id.export_xml_analytic_accounts:
+            #     if line.analytic_account_id and line.analytic_account_id.code:
+            #         item['accounting_info']['cost_category_id'] = line.analytic_account_id.code
+            #     if line.analytic_tag_ids:
+            #         item['accounting_info']['cost_category_id2'] = line.analytic_tag_ids[0].name[:35]
         return item
 
     def get_total_amount(self, move_id, invoice_mode):
